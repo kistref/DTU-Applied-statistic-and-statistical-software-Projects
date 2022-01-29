@@ -1,0 +1,53 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 3A - Kali
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+
+The dataset kali contains measurements of the content of kali (K2O) for four different productions
+
+Variable name | Description
+------------- | -------------
+production | production unit
+kali | content of kali
+
+
+## 1. Use a non-parametric test to examine if the content of kali depends on the different productions
+
+Start by loading and plotting the data
+
+```{r}
+# Code here
+kali=read.table('kali.txt', header = TRUE, sep = "")
+kali$production=as.numeric(factor(kali$production))
+plot(production~kali, data = kali)
+wilcox.test(kali$kali,kali$production)
+```
+
+## 2. Use a one-way ANOVA to examine if the content of kali depends on the different productions
+
+```{r}
+# Code here
+str(kali)
+kali$production=factor(kali$production)
+str(kali)
+anova(lm(kali~production,data = kali))
+```
+
+## 3. If the content of kali depends on the different productions, which of the production(s) yield the highest content?  
+
+```{r}
+# Code here
+summary.lm(lm(kali~production,data = kali))
+```
+

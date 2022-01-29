@@ -1,0 +1,97 @@
+cover block treat
+14 1 C
+23 1 C
+22 2 C
+35 2 C
+67 3 C
+82 3 C
+94 4 C
+95 4 C
+34 5 C
+53 5 C
+58 6 C
+75 6 C
+19 7 C
+47 7 C
+53 8 C
+61 8 C
+ 4 1 L
+ 4 1 L 
+ 7 2 L
+ 8 2 L
+28 3 L
+58 3 L
+27 4 L
+35 4 L
+11 5 L
+33 5 L
+16 6 L
+31 6 L
+ 6 7 L
+ 8 7 L
+15 8 L
+17 8 L
+11 1 f
+24 1 f
+14 2 f
+31 2 f
+52 3 f
+59 3 f
+83 4 f
+89 4 f
+33 5 f
+34 5 f
+39 6 f
+52 6 f
+43 7 f
+53 7 f
+30 8 f
+37 8 f
+ 3 1 Lf
+ 5 1 Lf
+ 3 2 Lf
+ 6 2 Lf
+ 9 3 Lf
+31 3 Lf
+21 4 Lf
+57 4 Lf
+ 5 5 Lf
+ 9 5 Lf
+26 6 Lf
+43 6 Lf
+ 4 7 Lf
+12 7 Lf
+12 8 Lf
+18 8 Lf
+10 1 fF
+13 1 fF
+10 2 fF
+15 2 fF
+44 3 fF
+50 3 fF
+57 4 fF
+73 4 fF
+26 5 fF
+42 5 fF
+38 6 fF
+42 6 fF
+29 7 fF
+36 7 fF
+11 8 fF
+40 8 fF
+ 1 1 LfF
+ 2 1 LfF
+ 3 2 LfF
+ 5 2 LfF
+ 6 3 LfF
+ 9 3 LfF
+ 7 4 LfF
+22 4 LfF
+ 5 5 LfF
+ 6 5 LfF
+10 6 LfF
+17 6 LfF
+ 5 7 LfF
+14 7 LfF
+ 5 8 LfF
+ 7 8 LfF

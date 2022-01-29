@@ -1,0 +1,57 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 1B - Bodyfat
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+The dataset bodyfat contains measurements of bodyfat for a number of men and women 
+
+
+Variable name | Description
+------------- | -------------
+gender | gender (male/femal)
+fatpct | Measurement of fat percentage
+
+
+## 1. Can the data in each group (gender) be assumed to be normally distributed
+
+Start by loading the data (make sure datafile is present in working directory)
+```{r}
+# Put code here
+bodyfat=read.table('bodyfat.txt', header = TRUE, sep = "")
+```
+
+Use both visual aids as well as normality tests to check the normality of fat-percentages on each gender.
+```{r}
+# Put code here
+bodyfat_m=subset(bodyfat,bodyfat$gender=='m')
+bodyfat_f=subset(bodyfat,bodyfat$gender=='f')
+qqnorm(bodyfat_m$fatpct)
+qqline(bodyfat_m$fatpct)
+qqnorm(bodyfat_f$fatpct)
+qqline(bodyfat_f$fatpct)
+```
+
+## 2. Is there a difference in the percentage of body fat for men and women? Perform a t-test
+```{r }
+# Put code here
+t.test(bodyfat_f$fatpct,bodyfat_m$fatpct)
+```
+
+## 3. Is there a difference in the percentage of body fat for men and women? Perform a non-parametric test
+```{r}
+# Put code here
+simx_boot <- replicate(10000, sample(bodyfat_f$fatpct, replace = TRUE))
+simy_boot <- replicate(10000, sample(bodyfat_m$fatpct, replace = TRUE))
+simmean_difs <- apply(simx_boot, 2, mean) - apply(simy_boot, 2, mean)
+quantile(simmean_difs, c(0.025, 0.975))
+```
+

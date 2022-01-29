@@ -1,0 +1,61 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 1A - Climate
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+
+The dataset clima contains yearly average temperatures in Denmark and Greenland for the last
+hundred years.  
+
+Variable name | Description
+------------- | -------------
+time | Year
+denmark | Average temperature in Denmark
+greenland | Average temperature in Greenland
+
+## 1. Plot the two time series and compute the correlation. What is the conclusion?
+
+Start by loading the data (make sure datafile is present in working directory)
+```{r}
+# Put code here
+clima=read.table('clima.txt', header = TRUE, sep = "")
+```
+
+Use the plot command in R to plot data
+```{r}
+# Put code here
+par(mfrow=c(1,2))
+plot(clima$time,clima$denmark,col='red',xlab = 'Year',ylab = 'Danmark')
+plot(clima$time,clima$greenland,col='green',xlab = 'Year',ylab = 'Greenland')
+```
+
+Plot Temperatures of Greenland and Denmark up against each other to explore the relation between these two.
+```{r }
+# Put code here
+plot(clima$denmark,clima$greenland)
+```
+
+## 2 Is the temperature in Denmark increasing when considering the time series 1900-1960? 
+```{r}
+# Put code here
+clima_1=subset(clima,clima$time<'1961')
+cor.test(clima_1$denmark,clima_1$time)
+```
+
+
+## 3 Is the temperature in Denmark increasing when considering the time series 1960-2000?
+```{r}
+# Put code here
+clima_2=subset(clima,clima$time>'1960')
+cor.test(clima_2$denmark,clima_2$time)
+```

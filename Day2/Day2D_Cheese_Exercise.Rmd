@@ -1,0 +1,85 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 2D - Cheese
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+
+As cheddar cheese matures, a variety of chemical processes take place. The taste of matured cheese
+is related to the concentration of several chemicals in the final product. In a study of cheddar cheese
+from the LaTrobe Valley of Victoria, Australia, samples of cheese were analyzed for their chemical
+composition and were subjected to taste tests. Overall taste scores were obtained by combining the
+scores from several tasters.
+
+Variable name | Description
+------------- | -------------
+case | sample number
+taste | subjective taste test score, obtained by combining the scores of several tasters
+acetic | Natural log of concentration of acetic acid
+h2s | Natural log of concentration of hydrogen sulfide
+lactic | Concentration of lactic acid
+
+
+## 1. Use scatterplots, correlation, and simple regression to examine the relationships among the individual variables.
+Start by loading data 
+
+```{r}
+# Code here
+ost=read.table('cheese.txt', header = TRUE, sep = "")
+fit1=lm(taste~Case,data=ost)
+fit2=lm(taste~Acetic, data = ost)
+fit3=lm(taste~H2S, data = ost)
+fit4=lm(taste~Lactic, data = ost)
+```
+
+Visually investigate the relation between the variables:
+
+```{r}
+# Code here
+#pairs(ost)
+pairs(ost, panel=panel.smooth)
+cor(ost)
+```
+
+## 2. Why do you think acetic and h2s has been transformed?
+
+
+## 3. What happens when you run a regression model with all the independent variables in the model?
+
+```{r}
+# Code here
+fit=lm(taste~.,data = ost)
+summary(fit)
+```
+
+## 4. What model would you prefer for prediction?
+```{r}
+#Code here
+anova(fit,fit1,fit2,fit3,fit4)
+```
+
+
+
+## 5. Predict the 'taste' of a cheese where (log) acetic is 5.3, (log) h2s is 8.0 and lactic is 3.0
+
+
+```{r}
+# Code here
+```
+
+
+## 6. Could there be some problems with the above prediction?
+
+```{r}
+
+# Code here
+```

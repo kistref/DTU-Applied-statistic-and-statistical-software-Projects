@@ -1,0 +1,44 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 4A - Caffeine
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+In a study the caffeine consumption by marital status among women giving birth was investigated.
+The results are given in the table below
+
+Martial-status/    Caffeine | 0  | 1-150 |  151-300 | > 300   
+---- | ---- |  ---- | ---- |   ---- | 
+Married | 652 | 1537 | 598 | 242
+Prev. Married | 36 | 46 | 38 | 21 |
+Single | 218 | 327 | 106 | 67 |
+
+## 1. Type the data into R so that appropriate analysis can be carried out
+```{r}
+# Code here
+caffe <- matrix(c(652,36,218,1537,46,327,598,46,106,242,21,67), ncol = 4, 
+                  dimnames = list(c("Married","Prev Married",'Single'),c('0',"1-150",'151-300','>300')))
+caffe
+```
+
+## 2. Determine whether Caffeine consumption and Marital status are independent
+```{r}
+# Code here
+chisq.test(caffe,correct = FALSE)
+```
+
+## 3. If there is dependence between Caffeine consumption and Marital status, what is the conclusion?
+```{r}
+# COde here
+mosaicplot(caffe, shade = TRUE)
+```
+

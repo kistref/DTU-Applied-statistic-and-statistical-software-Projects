@@ -1,0 +1,61 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 1D - laborforce
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+This dataset contains the labor force participation rate (LFPR) of women in 19 cities in the United
+States in each of two years (1968 and 1972). The data help to measure the growing presence of women
+in the labor force over this period.
+
+Variable name | Description
+------------- | -------------
+city | City in the US
+1972 | Labor Force Participation rate of women in 1972
+1968 | Labor Force Participation rate of women in 1968
+
+## 1. Compare LFPR rates in the two years with a pooled t-test since the United States did not change much from 1968 to 1972
+Start by loading data:
+```{r}
+# Code here
+labor=read.table('labor.txt', header = TRUE, sep = "")
+```
+
+If we suspect that the variance is roughly the same for the groups of 1968 and 1972 we can use a Pooled t-test in R
+
+```{r}
+# Code here
+t.test(labor$x1972,labor$x1968,alternative="less",var.equal=TRUE)
+```
+
+
+## 2. Compare LFPR rates in the two years with a paired t-test
+
+Paired T-test in R
+```{r}
+# Code here
+t.test(labor$x1972,labor$x1968,paired = TRUE)
+```
+
+
+
+## 3. Which of the two methods you have used do you find most appropriate?
+```{r}
+# Code here
+```
+
+
+## 4. If you have found a significant change - how big is this change then?
+```{r}
+# Code here
+```
+

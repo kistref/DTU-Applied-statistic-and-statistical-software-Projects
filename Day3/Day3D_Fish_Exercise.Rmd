@@ -1,0 +1,78 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 3D - Fish
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+To study the influence of ocean grazers on regeneration rats of seaweed in the intertidal zone, a
+researcher scraped rock plots free of seaweed and observed the degree of regeneration when certain
+types of seaweed-grazing animals were denied access. The grazers were limpets (L), small fishes (f)
+and large fishes (F). A plot was taken to be a square rock surface, 100 cm on each side. Each plot
+received one of six treatments, named here by which grazers were allowed access.
+
+symbol| Description
+------------- | -------------
+LfF | All three grazers were allowed access
+fF | Limpets were excluded by surrounding the plot with caustic paint
+Lf | Large fish were excluded by covering the plot with a course net
+f | Limpets and large fish were excluded
+L | Small and large fish were excluded by covering the plot with a fine net
+C | Control: limpets, small fish and large fish were all excluded
+
+Because the intertidal zone is a highly variable environment, the researcher applied the treatments
+in eight blocks of twelve plots each. Within each block she randomly assigned treatments to plots so
+that each treatment was applied to two plots. The blocks covered a wide range of tidal conditions
+
+Symbol | Description
+------------- | -------------
+Block 1 | just below high tide level, exposed to heavy surf
+Block 2 | just below high tide level, protected from the surf
+Block 3 | midtide, exposed
+Block 4 | midtide, protected
+Block 5 | just above low tide level, exposed
+Block 6 | just above low tide level, protected
+Block 7 | on near-vertical rock wall, midtide level, protected
+Block 8 | on near-vertical rock wall, above low tide level, protected
+
+## **Variables** 
+
+Variable name | Description
+------------- | -------------
+cover | Percentage of regenerated seaweed
+block | Blocks for different tidal situations
+treat | Treatment, i.e. what fishes are excluded
+
+## 1. Make appropriate plots to investigate whether treatments or blocks have any influence on the percentage of regenerated seawed
+
+Start by loading and inspecting data
+```{r}
+# code here
+```
+
+Informative plots  
+
+```{r}
+# Code here
+```
+
+## 2. Test the model using a 5% signiffcance level
+Start with a full model with interactions
+
+```{r}
+# Code here
+```
+
+## 3. Is there evidence of any interaction effects?
+
+```{r}
+# Code here
+```

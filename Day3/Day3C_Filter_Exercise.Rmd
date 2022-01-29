@@ -1,0 +1,65 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 3C - Filter
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+
+The data are from a statement by Texaco, Inc. to the Air and Water Pollution Subcommittee of the
+Senate Public Works Committee on June 26, 1973. Mr. John McKinley, President of Texaco, cited
+the Octel filter, developed by Associated Octel Company as effective in reducing pollution. However,
+questions had been raised about the effects of pollution filters on aspects of vehicle performance,
+including noise levels. He referred to data presented in the datafile associated with this story as
+evidence that the Octel filter was at least as good as a standard silencer in controlling vehicle
+noise levels.
+The dataset filter constitute a 3-way factorial experiment with 3 replications. The factors are type of
+filter (2 types), vehicle size (3 sizes), and side of car (two sides).
+
+Variable name | Description
+------------- | -------------
+NOISE | Noise level reading (decibels)
+SIZE| Vehicle size: 1 small 2 medium 3 large
+TYPE | 1 standard silencer 2 Octel filter
+SIDE | 1 right side 2 left side of car
+
+
+## 1. Determine whether size, type and side influence on the noise level by doing a graphical comparison
+Start by loading and converting data to right class
+```{r}
+# Code here
+filter=read.table('filter.txt', header = TRUE, sep = "")
+str(filter)
+filter$SIZE=factor(filter$SIZE)
+filter$TYPE=factor(filter$TYPE)
+filter$SIDE=factor(filter$SIDE)
+```
+
+Visual inspection of data
+```{r}
+# Code here
+plot(filter$NOISE~filter$SIZE)
+plot(filter$NOISE~filter$TYPE)
+plot(filter$NOISE~filter$SIDE)
+```
+## 2. Determine whether size, type and side influence on the noise level by the appropriate statistical analysis
+```{r}
+# Code here
+anova(lm(NOISE~TYPE+SIZE+SIDE,data = filter))
+```
+
+## 3. Are there any interaction effects between size and type?
+```{r}
+# Code here
+summary(lm(NOISE~TYPE+SIZE+SIDE,data = filter),correlation = TRUE)
+interaction.plot(filter$TYPE,filter$SIZE,filter$NOISE)
+```
+

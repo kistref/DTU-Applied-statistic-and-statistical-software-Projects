@@ -1,0 +1,66 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 5A - Forbes
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+library(car)
+```
+
+This dataset holds several facts about 77 companies selected from the Forbes 500 list for 1986. This is a
+1/10 systematic sample from the alphabetical list of companies. The Forbes 500 includes all companies
+in the top 500 on any of the criteria, and thus has almost 800 companies in the list. Companies are
+often interested in how to increase sales.
+Many of the variables are skewed { a common occurrance with financial data { which suggests that
+much of the data are better analyzed after taking logarithms. For this study one should take the log
+of Sales and Assets.
+
+Variable name | Description
+------------- | -------------
+Company | Company Name
+Assets | Amount of assets (in millions)
+Sales | Amount of sales (in millions)
+Market.Value | Market Value of the company (in millions)
+Profits  |  Profits (in millions)
+Cash.Flow | Cash Flow (in millions)
+Employees | Number of employees (in thousands)
+Sector | Type of market the company is associated with
+
+## 1. Investigate the relation between Log(Sales) predicted by Log(Assets)
+
+```{r}
+# Code here
+forbes=read.table('forbes.txt', header = TRUE, sep = "\t")
+forbes$lSales=log(forbes$Sales)
+forbes$lAssets=log(forbes$Assets)
+fit=lm(lSales~lAssets,forbes)
+Anova(fit)
+summary(fit)
+plot(fit)
+```
+
+## 2. Include Sector as a discrete factor in the model - what is your conclusion?
+
+```{r}
+# Code here
+forbes$sector=factor(forbes$sector)
+fit1=lm(lSales~lAssets+sector,forbes)
+anova(fit1)
+summary(fit1)
+plot(fit1)
+```
+
+## 3. Are other variables significant?
+
+```{r}
+# Code here
+forbes$Company=as.numeric(factor(forbes$Company))
+Anova(lm(lAssets~.-(Assets+lSales),forbes))
+```
+

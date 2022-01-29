@@ -1,0 +1,49 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 4B - Diet
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+A manufacturer was considering marketing crackers high in a certain kind of edible fiber as a dieting
+aid. Dieters would consume some crackers before a meal, filling their stomachs so that they would
+feel less hungry and eat less. A laboratory studied whether people would in fact eat less in this way.
+Female subjects ate crackers with different types of fiber (bran fiber, gum fiber, both, and a control
+cracker) and were then allowed to eat as much as they wished from a prepared menu. The amount
+of food they consumed and their weight were monitored, along with any side effects they reported.
+Unfortunately, some subjects developed uncomfortable bloating and gastric upset from some of the
+fiber crackers.
+
+Variable name | Description
+------------- | ------------------------------------
+Cracker | Type of fiber in the cracker
+Diet |One of four diets (type of cracker)
+Subject | An identification for each of the 12 subjects
+Digested | Digested calories. Difference between caloric intake and calories passed through system
+Bloat | Degree of bloating and flatulence reported by the subjects
+
+## 1. Analyze the relationship between the four types of cracker and the four levels of severity of bloating as reported by the subjects.  
+
+```{r}
+#Code here
+diet=read.table('diet.txt', header = TRUE, sep = "")
+diet$Cracker=as.factor(diet$Cracker)
+diet$Diet=as.factor(diet$Diet)
+diet$Subject=as.factor(diet$Subject)
+diet$Bloat=as.factor(diet$Bloat)
+str(diet)
+diet1=data.frame(diet$Cracker,diet$Bloat)
+str(diet1)
+diet1=table(diet1)
+diet1
+fisher.test(diet1)
+```
+
+

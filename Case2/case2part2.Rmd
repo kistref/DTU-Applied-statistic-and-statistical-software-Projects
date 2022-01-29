@@ -1,0 +1,376 @@
+---
+title: '02441: Case 2'
+author: Zuzanna Czelusniak,
+        Thomas Aamand Witting,
+        Zoltán György Varga
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+## Import packages
+```{r}
+library(car)
+library(lmtest)
+library(corrplot)
+library(dplyr)
+```
+
+## Functions
+```{r}
+plot.building <- function(df, bIDs) {
+  
+  if (!is.list(bIDs)) {
+    bIDS <- c(bIDs)
+  }
+  
+  for (bID in bIDs) {
+    par(mfrow=c(2,2))
+    building <- subset(df, ID == bID)
+    
+    plot(building$consumption.norm~building$weekday, ylim=range(min(merge_1$consumption.norm), max(merge_1$consumption.norm)))
+    plot(building$consumption.norm~building$week, ylim=range(min(merge_1$consumption.norm), max(merge_1$consumption.norm)))
+    plot(building$consumption.norm~building$temp, ylim=range(min(merge_1$consumption.norm), max(merge_1$consumption.norm)))
+    plot(building$consumption.norm~building$date, ylim=range(min(merge_1$consumption.norm), max(merge_1$consumption.norm)))
+  }
+}
+```
+
+## Plot settings
+```{r}
+# color palette
+cpal <- colorRampPalette(c('grey','blue'))
+```
+
+
+## Load and prepare parent dataframe
+```{r}
+# Load dataframe
+merge.a <- read.table('merged_data.csv', header = TRUE, sep = ",")
+
+# Set columns to correct type
+merge.a$dir       <- as.factor(merge.a$dir)
+merge.a$cond      <- as.factor(merge.a$cond)
+merge.a$fog       <- as.factor(merge.a$fog)
+merge.a$rain      <- as.factor(merge.a$rain)
+merge.a$ID        <- as.factor(merge.a$ID)
+merge.a$date      <- as.POSIXct(merge.a$date)
+merge.a$weekday   <- as.factor(weekdays(as.Date(merge.a$date)))
+
+# Set order of weekday varible
+merge.a$weekday   <- factor(merge.a$weekday, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+merge.a           <- subset(merge.a, months(merge.a$date) != "September")
+
+merge.a$week      <- as.factor(strftime(merge.a$date, format = "%W")) 
+merge.a$weekend   <- as.factor(merge.a$weekday == "Saturday" | merge.a$weekday == "Sunday")
+merge.a$holiday   <- as.factor(merge.a$week == 42 | merge.a$date > as.POSIXct("2018-12-21"))
+```
+
+## Prepare and clean sample dataframe
+```{r}
+# Copy parent dataframe
+merge_1 <- merge.a
+
+# Transform temp to I(21-temp) (temp)
+merge_1$temp <- (21-merge_1$temp)
+
+# guesstimate size based on mean/median/whatever consumption
+merge_1$consumption.mean   <- ave(merge_1$consumption, merge_1$ID)
+merge_1$consumption.median <- ave(merge_1$consumption, merge_1$ID, FUN = median)
+
+# Justify that it makes sense to normalize consumption
+# Larger buildings require more energy to heat. As we want to identify the least efficient
+# buildings it makes sense to take account of building size. Otherwise, the largest buildings would tend to seem the most inefficient although they might not be. Could this be justified with a plot as well?
+
+merge_1$consumption.norm   <- merge_1$consumption - merge_1$consumption.mean
+merge_1$consumption.norm   <- merge_1$consumption / merge_1$consumption.mean
+
+# Save sample dataframe before removing outlier buildings
+merge_1.full <- merge_1
+
+# remove outlier buildings
+merge_1 <- merge_1[!(merge_1$ID %in% c(4529799, 6393013, 65063303, 65118812, 69999051)), ]
+merge_1$ID <- factor(merge_1$ID)
+```
+
+## Visual overview of dataframe
+```{r}
+# temperature through time
+plot(merge_1$temp~merge_1$date, xlab="Date", ylab="I(21-temp)", main="temperature difference over time")
+
+# Consumption vs normalized consumption
+# Justification: The provided buildings may have vastly different sizes. A decent approximation 
+# of building size could be the mean or median of its consumption values. By normalizing the
+# consumption (consumption / consumption.mean) we can better compare the consumptions between buildings,
+# as it now takes (approximate) building sizes into account.
+# Basically we now measure Ua per sqm instead of per building
+par(mfrow=c(1,2))
+plot(merge_1$consumption~merge_1$temp, xlab="I(21-temp)", ylab="Consumption", col=rgb(0,0,0,0.2))
+plot(merge_1$consumption.norm~merge_1$temp, xlab="I(21-temp)", ylab="Normalized consumption", col=rgb(0,0,0,0.2))
+
+par(mfrow=c(1,2))
+plot(merge_1$consumption~merge_1$temp, xlab="I(21-temp)", ylab="Consumption", col=ifelse(merge_1$consumption.mean < 0.048, "blue", ifelse(merge_1$consumption.mean > 3.444, "red", rgb(0,0,0,0.02))))
+legend("topright", legend=c("Largest 2.5%", "Smallest 2.5%"), col=c("red", "blue"), pch=1, cex=0.8, title="Building types", text.font=4, bg='white')
+plot(merge_1$consumption.norm~merge_1$temp, xlab="I(21-temp)", ylab="Normalized consumption", col=ifelse(merge_1$consumption.mean < 0.048, "blue", ifelse(merge_1$consumption.mean > 3.444, "red", rgb(0,0,0,0.02))))
+legend("topright", legend=c("Largest 2.5%", "Smallest 2.5%"), col=c("red", "blue"), pch=1, cex=0.8, title="Building types", text.font=4, bg='white')
+
+
+
+
+# Weekend/holiday
+par(mfrow=c(1,2))
+plot(merge_1$consumption.norm~merge_1$weekend, xlab="Weekend", ylab="Normalized consumption")
+plot(merge_1$consumption.norm~merge_1$holiday, xlab="Holiday", ylab="Normalized consumption")
+
+# Correlation plots
+par(mfrow=c(1,1))
+res <- cor(select_if(merge_1, is.numeric)[, c(2:8)])
+round(res, 2)
+corrplot(res,)
+
+# Building sizes
+par(mfrow=c(1,1))
+plot(merge_1$consumption.mean~merge_1$ID)
+
+
+# Heating start
+plot(ave(merge_1$consumption.norm, merge_1$date)~merge_1$date, col=rgb(0,0,0,0), xlab="Date", ylab="Mean daily norm. consumption", main="Mean normalized consumption through time")
+lines(ave(merge_1$consumption.norm, merge_1$date)~merge_1$date)
+
+plot(merge_1$consumption.norm~merge_1$week, outline=FALSE, xlab="Week", ylab="Norm. consumption", main="Normalized consumption through time")
+```
+
+
+
+
+
+
+## Fit simple model (with only ID, temp, weekend, holiday predictor variables)
+```{r}
+# Create simple model
+m.simple <- lm(consumption.norm~ID+temp+weekend+holiday, merge_1)
+
+# Reduce simple model
+#step(m.simple, scope=~.^2)
+
+# Save reduced simple model based on step output
+m.simple.reduced <- lm(formula = consumption.norm ~ ID + temp + weekend + holiday + 
+    ID:temp + temp:weekend + temp:holiday, data = merge_1)
+
+
+xtable(anova(m.complex.red))
+
+
+```
+
+
+
+## Plotting simple model fit
+```{r}
+# Plot in 2x2 grid
+par(mfrow = c(2, 2))
+
+# Plot simple model
+plot(m.simple, col = cpal(10)[as.numeric(cut(merge_1$temp,breaks = 10))])
+
+# Plot reduced simple model
+plot(m.simple.reduced)
+```
+
+
+## Detect outlier buildings
+```{r}
+
+# All building ids
+bIDs.all <- levels(merge_1$ID)
+
+# Results found from manual inspection of all buildings
+# Possible outlier buildings
+bIDs.outlier      <- c(4529799, 6393013, 65063303, 65118812, 69999051)
+# Buildings with possible outlier observations
+bIDS.obs.outlier  <- c(4866195, 5140250, 69580701, 69652588, 78185925, 78443775, 7072241)
+
+
+# remove outliers for building and 7072241 (rows: 7989)
+
+plot.building(merge_1.full, 78185925)
+```
+
+
+
+
+## create more complex model
+```{r}
+# Define base complex model
+m.complex <- lm(consumption.norm~(ID+temp+weekend+holiday+hum+wind_spd+pressure+rain+fog), merge_1)
+
+# Forwards select a better, more complex model
+#step(m.complex, scope=~.^3)
+
+# Define reduced complex model
+m.complex.scopesquare <- lm(formula = consumption.norm ~ ID + temp + weekend + holiday + 
+    hum + wind_spd + pressure + rain + fog + ID:temp + wind_spd:pressure + 
+    holiday:wind_spd + weekend:pressure + hum:rain + weekend:holiday + 
+    pressure:fog + hum:pressure + weekend:hum + temp:rain + temp:wind_spd + 
+    weekend:wind_spd + holiday:hum + hum:wind_spd + temp:hum + 
+    weekend:rain + ID:weekend, data = merge_1)
+
+m.complex.red <- lm(formula = consumption.norm ~ ID + temp + weekend + holiday + 
+    hum + wind_spd + pressure + rain + fog + ID:temp + wind_spd:pressure + 
+    holiday:wind_spd + weekend:pressure + hum:rain + weekend:holiday + 
+    pressure:fog + hum:pressure + weekend:hum + temp:rain + temp:wind_spd + 
+    weekend:wind_spd + temp:weekend + holiday:hum + holiday:pressure + 
+    temp:pressure + weekend:rain + hum:wind_spd + ID:weekend + 
+    weekend:wind_spd:pressure + temp:weekend:wind_spd + weekend:holiday:hum + 
+    holiday:wind_spd:pressure + temp:weekend:pressure + weekend:holiday:pressure + 
+    weekend:hum:wind_spd + hum:wind_spd:pressure + holiday:hum:wind_spd, 
+    data = merge_1)
+
+# Inspect anova of model - remove insignificant predictors (quote: TA Tobias) even though it results in worse AIC score
+anova(m.complex.red)
+
+# Remember that we cant remove an (seemingly) insignificant interaction AB, if the
+# interaction ABC still exists
+m.complex.red <- update(m.complex.red, ~. -holiday:hum:wind_spd)
+anova(m.complex.red)
+
+m.complex.red <- update(m.complex.red, ~. -weekend:rain)
+anova(m.complex.red)
+
+# Check for NAs?
+subset(m.complex.red$coefficients, is.na(m.complex.red$coefficients))
+
+# Number of coefficients
+length(m.complex.red$coefficients)
+
+summary(m.complex.red)
+
+par(mfrow=c(2,2))
+#plot(m.int.red, col=cpal(10)[as.numeric(cut(merge_1$temp,breaks = 10))])
+plot(m.complex.scopesquare)
+plot(m.complex.red)
+plot(m.complex.red, col=ifelse(merge_1$consumption.norm > 1.594421 | merge_1$consumption.norm < 0.4369, 'blue', 'grey'))
+
+# index 3357 = ID 78185925
+# index 8667 = ID 6392172
+
+merge_1.no.outliers <- merge_1[!(row.names(merge_1) %in% c(3357, 8667, 7196)), ]
+quantile(merge_1$consumption.norm, .05)
+quantile(merge_1$consumption.mean, c(.025, .975))
+
+m.complex.red.outlier <- update(m.complex.red, data = merge_1.no.outliers)
+
+par(mfrow=c(2,2))
+plot(m.complex.red.outlier)
+anova(m.complex.red)
+
+anova(m.complex.scopesquare, m.complex.red)
+summary(m.complex.red)
+```
+
+
+
+
+```{r}
+anova(m.complex.red)
+summary(m.complex.red)
+
+
+library(broom)
+
+coef.tidy <- tidy(m.complex.red)
+colnames(coef.tidy) <- c("Predictor", "Estimate", "StdError", "tvalue", "pvalue")
+coef.tidy[order(coef.tidy$Estimate, decreasing = TRUE), ]
+
+# Both at Lervangen 35 (bygnr 1 vs bygnr 5)
+plot.building(merge_1, 69469107)
+plot.building(merge_1, 6790785)
+summary(m.complex.red)
+anova(m.complex.red)
+
+
+```
+
+
+```{r}
+fit <- m.complex.red
+
+#fit <- m.simple.reduced
+
+summary.final <- summary(fit)
+rows <- grep(pattern='temp', x = rownames(summary.final$coefficients))
+tempcoef <- summary.final$coefficients[rows, ]
+
+# Create design matrix
+matrix.diag <- diag(1, nlevels(merge_1$ID), nlevels(merge_1$ID))
+matrix.diag[, 1] <- 1
+matrix.factors <- matrix(1, nlevels(merge_1$ID), nrow(tempcoef) - nlevels(merge_1$ID))
+rownames(matrix.diag) <- levels(merge_1$ID)
+colnames(matrix.factors) <- row.names(tempcoef)[(nlevels(merge_1$ID)+1):nrow(tempcoef)]
+
+matrix.factors[, 1] <- 0 # temp:rain - not a rainy day
+matrix.factors[, 2] <- mean(merge_1$temp) * mean(merge_1$wind_spd) # temp:wind_spd
+matrix.factors[, 3] <- 0 # temp:weekend - it is not weekend
+matrix.factors[, 4] <- mean(merge_1$pressure) # temp:pressure
+matrix.factors[, 5] <- 0 # temp:weekend:wind_spd
+matrix.factors[, 6] <- 0 # temp:weekend:pressure
+
+matrix.design <- cbind(matrix.diag, matrix.factors)
+matrix.covariance <- summary.final$cov.unscaled[rows, rows]
+est <- matrix.design %*% summary.final$coefficients[rows,1]
+
+var.est <- matrix.design %*% matrix.covariance %*% t(matrix.design) * summary.final$sigma^2
+coeff <- data.frame(Group=levels(merge_1$ID), slope = est, sd.error=sqrt(diag(var.est)))
+
+pred <- coeff[, -c(1)]
+pred$lwr <- coeff$slope - coeff$sd.error * 1.96
+pred$upr <- coeff$slope + coeff$sd.error * 1.96
+pred <- pred[, -c(2)]
+pred <- pred[order(-pred$slope), ]
+n <- 7
+pred.subset <- pred[-c((n+1):nrow(pred)), ]
+
+#pred.subset <- pred
+
+var.est
+
+# First the upper limit
+pm <- matrix(pred.subset[, 3])
+rownames(pm) <- rownames(pred.subset)
+barplot(pm, beside = TRUE, border = "white", col = 1:11, axisnames= TRUE, ylab="Ua", main="Estimated Ua for least efficient buildings")
+
+# The expected value
+pm <- matrix(pred.subset[, 1])
+barplot(pm, beside = TRUE, col = 1:11, add = TRUE, border = "white", axisnames = TRUE)
+
+# The lower limit with white fill
+pm <- matrix(pred.subset$lwr)
+barplot(pm, beside = TRUE, add = TRUE, col = "white", border = "white", axisnames = TRUE)
+
+
+
+
+# Plot all buildings
+
+pm <- matrix(pred[, 3])
+rownames(pm) <- rownames(pred)
+barplot(pm, beside = TRUE, border = "white", col = "gray", axisnames= TRUE, ylab="Ua", main="Estimated Ua for all buildings")
+
+# The expected value
+pm <- matrix(pred[, 1])
+barplot(pm, beside = TRUE, col = "gray", add = TRUE, border = "white", axisnames = TRUE)
+
+# The lower limit with white fill
+pm <- matrix(pred$lwr)
+barplot(pm, beside = TRUE, add = TRUE, col = "white", border = "white", axisnames = TRUE)
+
+
+```
+
+
+
+```{r}
+plot.building(merge_1, rownames(pred.subset))
+```

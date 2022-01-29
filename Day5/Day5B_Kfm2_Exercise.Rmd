@@ -1,0 +1,44 @@
+
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 5B - KFM2
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+The dataset kfm contains measurements of the newborn babies, their mother and milk consumption
+
+Variable name | Description
+------------- | -------------
+dl.milk | amount of breast milk (dl)
+sex | gender of body
+weight | baby weight (kg)
+ml.suppl | amount of milk supplement (ml)
+mat.weight | mothers weight (kg)
+mat.height | mothers height (cm)
+
+
+## 1. The purpose of this assignment is to build a model and to test predictors of the child's weight.
+Of special interest is to investigate whether the effect of dl.milk, ml.suppl, mat.weight and
+mat.height are different for boys and girls. Remember that the stages in model building includes
+appropriate descriptive statistics, parameter estimation and testing, as well as model validation.
+
+```{r}
+# Code here
+child=read.table('kfm.txt', header = TRUE, sep = "")
+child$sex=factor(child$sex,labels = c(1,2))
+pairs(child,col=child$sex)
+step(lm(weight~.,child))
+fit=lm(formula = weight ~ dl.milk + ml.suppl + mat.weight, data = child)
+Anova(fit)
+plot(fit)
+fit2=lm(weight ~ dl.milk:sex + ml.suppl:sex + mat.weight:sex,child)
+Anova(fit2)
+```

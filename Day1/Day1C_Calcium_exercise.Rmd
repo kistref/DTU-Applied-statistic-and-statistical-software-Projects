@@ -1,0 +1,86 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 1C - calcium
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+Does increasing calcium intake reduce blood pressure? Observational studies suggest that there is a
+link, and that it is strongest in African-American men. Twenty-one African-American men participated
+in an experiment to test this hypothesis. Ten of the men took a calcium supplement for 12 weeks while
+the remaining 11 men received a placebo. Researchers measured the blood pressure of each subject
+before and after the 12-week period. The experiment was double-blind. The dataset calcium contains
+data from the experiment.
+
+
+Variable name | Description
+------------- | -------------
+treatment | whether subject received calcium or placebo
+begin | aseated systolic blood pressure before treatment
+end | aseated systolic blood pressure after treatment
+decrease | decrease in blood pressure (begin-end)
+
+## 1. What statistical test is appropriate for comparing the change in blood pressure between the treatment and placebo groups?
+
+
+
+## 2 .May the data in each group be considered as being normally distributed?
+
+Start by loading data:
+```{r}
+# put code here
+calcium=read.table('calcium.txt', header = TRUE, sep = "")
+```
+
+Investigate normality
+```{r}
+# Put code here
+qqnorm(calcium$Decrease)
+qqline(calcium$Decrease)
+```
+
+
+
+## 3. Test whether the variance in each group can be assumed to be the same
+
+
+```{r}
+# code here
+var.test(calcium_c$Decrease,calcium_p$Decrease)
+```
+
+
+## 4. Make a graphical comparison of the treatment means
+
+
+```{r}
+# Code here
+calcium_c=subset(calcium,calcium$Treatment=='Calcium')
+calcium_p=subset(calcium,calcium$Treatment=='Placebo')
+c_c=mean(calcium_c$Decrease)
+c_p=mean(calcium_p$Decrease)
+plot(c_c,c_p)
+```
+
+## 5. Make the statistical test for comparing the change in blood pressure between the treatment and placebo groups. What is your conclusion? What is the p-value of the test?  
+
+
+```{r}
+# Code here
+t.test(calcium_c$Decrease,calcium_p$Decrease)
+```
+
+
+## 6. Which non-parametric test could be used if data cannot be assumed to be normally distributed?
+
+```{r}
+# Code here
+```

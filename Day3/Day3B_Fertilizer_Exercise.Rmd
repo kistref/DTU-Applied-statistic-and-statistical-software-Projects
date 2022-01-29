@@ -1,0 +1,41 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 3B - Fertilizer
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+In a pilot study two different fertilizers were tested on three different fields. The yeild (compared to
+a reference) is given in the table below 
+
+Fertilizer/Field | a  | b |  c |   
+---- | ---- |  ---- | ---- |   
+a | 10.3 |-4.95 | -6
+b | 10.3 | -4.95 | -11
+
+## 1. Type the data into R so that appropriate analysis can be carried out
+
+```{r}
+# Code here
+```
+
+## 2. Determine whether Fertilizer and/or Field influence on the yield
+Start by making a one-way anova
+
+```{r}
+# Code here
+```
+
+## 3. Is it possible to test for interaction effects between Fertilizer and Field?
+
+```{r}
+# Code here
+```

@@ -1,0 +1,54 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 2A - Sport
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+This dataset contains the gold medal performances in the men's long jump, high jump and discus throw
+for the modern Olympic games from 1900 to 1984. Data are also provided for the 1968 Olympics, but
+one may wish to omit them from the analyses because that Olympics was quite different from later
+ones.
+
+Variable name | Description
+------------- | -------------
+highjump | winning result in high jum
+discusthrow | winning result in discus throw
+longjump | winning result in long jump
+year | year with reference at 1900
+
+## 1. Make appropriate plots for the different sport disciplines. Is there a tendency?
+Start by loading data
+
+```{r}
+# Code here
+sport=read.table('sport.txt', header = TRUE, sep = "")
+plot(year~high.jump,data=sport)
+plot(year~Discus.Throw,data=sport)
+plot(year~long.jump,data=sport)
+```
+
+## 2. It has been suggested that the Mexico City Olympics in 1968 saw unusually good track and field performances, possibly because of the high altitude. To investigate this question we must establish some expected performance level. How would you do this?  
+
+Fit linear model without observation for long.jump 1968. 
+
+```{r}
+# Code here
+fit=lm(long.jump~year,data=sport,subset = sport$year!='68')
+summary(fit)
+```
+
+## 3. Could you predict the winning result in long jump for the Olympic games in Greece 2004? 
+```{r}
+# Code here
+predict(fit,data.frame(year=104),interval='prediction')
+```
+

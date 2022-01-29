@@ -1,0 +1,149 @@
+---
+title: '02441: Case 1'
+author: Zuzanna Czelusniak,
+        Thomas Aamand Witting,
+        Zoltán György Varga
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+
+
+## Read data, clean data
+```{r}
+library(car)
+spr <- read.table("spr.txt", header=TRUE)
+#spr <- spr[-c(1,2)]
+spr$RunDate <- as.factor(spr$RunDate)
+levels(spr$RunDate) <- c(1,3,5,7,9)
+
+spr$Enzyme <- as.factor(spr$Enzyme)
+spr$DetStock <- as.factor(spr$DetStock)
+spr$CaStock <- as.factor(spr$CaStock)
+str(spr)
+
+pairs(spr)
+
+# Response variable doesn't look normal distributed
+par(mfrow=c(1,3))
+hist(spr$Response, 10)
+hist(sqrt(spr$Response), 10)
+hist(log(spr$Response), 10)
+
+# Looks to be decent with sqrt transformation, check with boxCox which transformation would work the best
+lm.a <- lm(Response~EnzymeConc, spr)
+
+# Sqrt transformation suggested by boxCox - same result as the visual histogram inspection
+
+# Perform the sqrt transformation
+par(mfrow=c(1,2))
+qqnorm(spr$Response)
+qqline(spr$Response)
+spr$Response <- sqrt(spr$Response)
+spr$EnzymeConc <- spr$EnzymeConc
+
+qqnorm(spr$Response)
+qqline(spr$Response)
+
+
+```
+## Built complete model, then reduce it to a minimal model by utilizing the step function
+```{r}
+lm.complete <- lm(Response~(EnzymeConc+Enzyme+DetStock+CaStock)^2, spr)
+step(lm.complete)
+
+lm.minimal <- lm(formula = Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+    Enzyme:DetStock, data = spr)
+boxCox(lm.minimal)
+```
+
+## Analyze minimal model
+```{r}
+Anova(lm.minimal)
+
+anova(lm.complete, lm.minimal)
+```
+
+## as
+```{r}
+par(mfrow=c(2,2))
+plot(lm.minimal, col=spr$Enzyme)
+legend("topleft", legend=unique(spr$Enzyme), col=1:length(spr$Enzyme), pch=1)
+par(mfrow=c(1,1))
+plot(spr$Response~spr$Enzyme)
+
+
+spr.new <- spr[c(-26, -147, -160), ]
+lm.final <- update(lm.minimal, data=spr.new)
+par(mfrow=c(2,2))
+plot(lm.final, col=spr.new$Enzyme)
+legend("topleft", legend=unique(spr.new$Enzyme), col=1:length(spr.new$Enzyme), pch=1)
+
+
+```
+# How does hardness and detergent influence the catalytic activity?
+Hardness (calcium) is not in our model - it does not influence the catalytic activity
+```{r}
+summary(lm.final)
+
+
+# Show that there is no significant difference between the minimal model and a model considering the hardness (meaning that hardness does not influence activity)
+lm.withca <- update(lm.final, ~ . + CaStock)
+anova(lm.final, lm.withca)
+
+
+
+# With detergence:    intercept@23.43
+# without detergence: intercept@(23.43-14.81)=8.62
+```
+
+## Check for systematic errors
+It seems that on a given day, experiments are only run with one specific enzyme. This could introduce errors to the data which may be hidden as an effect of the enzyme - but in reality it could be instrumental errors. By inspecting the subset of the data where the enzyme concentration is 0nM (that is, no enzyme is present) and where we keep the other variables constant, we can detect irregularities in the measured response. In an ideal experimental setting, the response would stay the same across all observations - but we detect the response differs on different run dates - meaning
+```{r}
+plot((spr$RunDate), as.numeric(spr$Enzyme), yaxt = "n", xlab="Day", ylab="Enzyme", main="Enzymes used per day")
+axis(2, at=1:5, labels=LETTERS[1:5])
+
+# Remove the enzyme from data
+spr.new <- spr[, -4]
+
+# For similar data on different days, is there different response?
+par(mfrow=c(2,2))
+plot(spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 1, ]$RunDate, spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 1, ]$Response, xlab="Day", ylab="sqrt(Response)", main="Det0 Ca0 EnzymeConc=0")
+
+plot(spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 1, ]$RunDate, spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 1, ]$Response, xlab="Day", ylab="sqrt(Response)", main="Det+ Ca0 EnzymeConc=0")
+
+plot(spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 1, ]$RunDate, spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 1, ]$Response, xlab="Day", ylab="sqrt(Response)", main="Det0 Ca+ EnzymeConc=0")
+
+plot(spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 12, ]$RunDate, spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 12, ]$Response, xlab="Day", ylab="sqrt(Response)", main="Det+ Ca+ EnzymeConc=0")
+
+
+
+oneway.test(Response~RunDate, data = spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 12, ], var.equal = FALSE)
+
+oneway.test(Response~RunDate, data = spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca0" & spr.new$EnzymeConc >= 12, ], var.equal = FALSE)
+
+oneway.test(Response~RunDate, data = spr.new[spr.new$DetStock == "Det0" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 12, ], var.equal = FALSE)
+
+oneway.test(Response~RunDate, data = spr.new[spr.new$DetStock == "Det+" & spr.new$CaStock == "Ca+" & spr.new$EnzymeConc >= 12, ], var.equal = FALSE)
+
+
+oneway.test(Response~DetStock, data = spr.new, var.equal = FALSE)
+
+par(mfrow=c(1,1))
+plot(Response^2~DetStock, data = spr.new, main="Detergence groups")
+
+```
+
+
+```{r}
+confint(lm.minimal, 'EnzymeD', level=0.95)
+6.291-1.811
+```

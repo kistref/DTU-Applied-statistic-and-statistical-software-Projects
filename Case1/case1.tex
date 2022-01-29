@@ -1,0 +1,586 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={02441: Multicolinearity},
+  pdfauthor={Andreas Baum},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{02441: Multicolinearity}
+\author{Andreas Baum}
+\date{04/12/19}
+
+\begin{document}
+\maketitle
+
+\hypertarget{read-data-clean-data}{%
+\subsection{Read data, clean data}\label{read-data-clean-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(car)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'car' was built under R version 4.0.5
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: carData
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{spr <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"spr.txt"}\NormalTok{, }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{)}
+\CommentTok{#spr <- spr[-c(1,2)]}
+\NormalTok{spr}\OperatorTok{$}\NormalTok{RunDate <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(spr}\OperatorTok{$}\NormalTok{RunDate)}
+\KeywordTok{levels}\NormalTok{(spr}\OperatorTok{$}\NormalTok{RunDate) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{9}\NormalTok{)}
+
+\NormalTok{spr}\OperatorTok{$}\NormalTok{Enzyme <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Enzyme)}
+\NormalTok{spr}\OperatorTok{$}\NormalTok{DetStock <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(spr}\OperatorTok{$}\NormalTok{DetStock)}
+\NormalTok{spr}\OperatorTok{$}\NormalTok{CaStock <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(spr}\OperatorTok{$}\NormalTok{CaStock)}
+\KeywordTok{str}\NormalTok{(spr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    160 obs. of  7 variables:
+##  $ RunDate   : Factor w/ 5 levels "1","3","5","7",..: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ Cycle     : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Response  : num  323 614 326 162 545 ...
+##  $ Enzyme    : Factor w/ 5 levels "A","B","C","D",..: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ EnzymeConc: num  2.5 7.5 15 7.5 2.5 7.5 0 15 2.5 15 ...
+##  $ DetStock  : Factor w/ 2 levels "Det+","Det0": 1 1 2 2 1 2 2 2 2 1 ...
+##  $ CaStock   : Factor w/ 2 levels "Ca+","Ca0": 1 2 1 2 2 1 1 2 1 2 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pairs}\NormalTok{(spr)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Response variable doesn't look normal distributed}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response, }\DecValTok{10}\NormalTok{)}
+\KeywordTok{hist}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response), }\DecValTok{10}\NormalTok{)}
+\KeywordTok{hist}\NormalTok{(}\KeywordTok{log}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response), }\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-1-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Looks to be decent with sqrt transformation, check with boxCox which transformation would work the best}
+\NormalTok{lm.a <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Response}\OperatorTok{~}\NormalTok{EnzymeConc, spr)}
+
+\CommentTok{# Sqrt transformation suggested by boxCox - same result as the visual histogram inspection}
+
+\CommentTok{# Perform the sqrt transformation}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{qqnorm}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response)}
+\KeywordTok{qqline}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response)}
+\NormalTok{spr}\OperatorTok{$}\NormalTok{Response <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response)}
+\NormalTok{spr}\OperatorTok{$}\NormalTok{EnzymeConc <-}\StringTok{ }\NormalTok{spr}\OperatorTok{$}\NormalTok{EnzymeConc}
+
+\KeywordTok{qqnorm}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response)}
+\KeywordTok{qqline}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-1-3.pdf} \#\#
+Built complete model, then reduce it to a minimal model by utilizing the
+step function
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.complete <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Response}\OperatorTok{~}\NormalTok{(EnzymeConc}\OperatorTok{+}\NormalTok{Enzyme}\OperatorTok{+}\NormalTok{DetStock}\OperatorTok{+}\NormalTok{CaStock)}\OperatorTok{^}\DecValTok{2}\NormalTok{, spr)}
+\KeywordTok{step}\NormalTok{(lm.complete)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Start:  AIC=342.87
+## Response ~ (EnzymeConc + Enzyme + DetStock + CaStock)^2
+## 
+##                       Df Sum of Sq    RSS    AIC
+## - Enzyme:CaStock       4    25.796 1048.9 338.85
+## - EnzymeConc:DetStock  1     2.447 1025.6 341.25
+## - DetStock:CaStock     1     5.522 1028.6 341.73
+## - EnzymeConc:CaStock   1     9.697 1032.8 342.38
+## <none>                             1023.1 342.87
+## - Enzyme:DetStock      4    64.790 1087.9 344.69
+## - EnzymeConc:Enzyme    4   205.185 1228.3 364.11
+## 
+## Step:  AIC=338.85
+## Response ~ EnzymeConc + Enzyme + DetStock + CaStock + EnzymeConc:Enzyme + 
+##     EnzymeConc:DetStock + EnzymeConc:CaStock + Enzyme:DetStock + 
+##     DetStock:CaStock
+## 
+##                       Df Sum of Sq    RSS    AIC
+## - EnzymeConc:DetStock  1     2.447 1051.4 337.23
+## - DetStock:CaStock     1     5.522 1054.4 337.69
+## - EnzymeConc:CaStock   1     9.697 1058.6 338.33
+## <none>                             1048.9 338.85
+## - Enzyme:DetStock      4    64.790 1113.7 340.44
+## - EnzymeConc:Enzyme    4   205.185 1254.1 359.44
+## 
+## Step:  AIC=337.23
+## Response ~ EnzymeConc + Enzyme + DetStock + CaStock + EnzymeConc:Enzyme + 
+##     EnzymeConc:CaStock + Enzyme:DetStock + DetStock:CaStock
+## 
+##                      Df Sum of Sq    RSS    AIC
+## - DetStock:CaStock    1     5.522 1056.9 336.06
+## - EnzymeConc:CaStock  1     9.697 1061.1 336.70
+## <none>                            1051.4 337.23
+## - Enzyme:DetStock     4    64.790 1116.2 338.79
+## - EnzymeConc:Enzyme   4   205.185 1256.5 357.75
+## 
+## Step:  AIC=336.06
+## Response ~ EnzymeConc + Enzyme + DetStock + CaStock + EnzymeConc:Enzyme + 
+##     EnzymeConc:CaStock + Enzyme:DetStock
+## 
+##                      Df Sum of Sq    RSS    AIC
+## - EnzymeConc:CaStock  1     9.697 1066.6 335.53
+## <none>                            1056.9 336.06
+## - Enzyme:DetStock     4    64.790 1121.7 337.58
+## - EnzymeConc:Enzyme   4   205.185 1262.1 356.45
+## 
+## Step:  AIC=335.53
+## Response ~ EnzymeConc + Enzyme + DetStock + CaStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock
+## 
+##                     Df Sum of Sq    RSS    AIC
+## - CaStock            1     1.118 1067.7 333.69
+## <none>                           1066.6 335.53
+## - Enzyme:DetStock    4    64.790 1131.4 336.96
+## - EnzymeConc:Enzyme  4   205.185 1271.8 355.68
+## 
+## Step:  AIC=333.69
+## Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock
+## 
+##                     Df Sum of Sq    RSS    AIC
+## <none>                           1067.7 333.69
+## - Enzyme:DetStock    4     64.79 1132.5 335.12
+## - EnzymeConc:Enzyme  4    205.19 1272.9 353.82
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock, data = spr)
+## 
+## Coefficients:
+##          (Intercept)            EnzymeConc               EnzymeB  
+##              23.3813                1.1614               -6.0535  
+##              EnzymeC               EnzymeD               EnzymeE  
+##              -2.2309               -5.7076               -2.1342  
+##         DetStockDet0    EnzymeConc:EnzymeB    EnzymeConc:EnzymeC  
+##             -14.7138               -0.1390               -0.3571  
+##   EnzymeConc:EnzymeD    EnzymeConc:EnzymeE  EnzymeB:DetStockDet0  
+##              -0.5826               -0.2617                1.2640  
+## EnzymeC:DetStockDet0  EnzymeD:DetStockDet0  EnzymeE:DetStockDet0  
+##              -2.3775                0.4654               -1.1219
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm.minimal <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\DataTypeTok{formula =}\NormalTok{ Response }\OperatorTok{~}\StringTok{ }\NormalTok{EnzymeConc }\OperatorTok{+}\StringTok{ }\NormalTok{Enzyme }\OperatorTok{+}\StringTok{ }\NormalTok{DetStock }\OperatorTok{+}\StringTok{ }\NormalTok{EnzymeConc}\OperatorTok{:}\NormalTok{Enzyme }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\NormalTok{Enzyme}\OperatorTok{:}\NormalTok{DetStock, }\DataTypeTok{data =}\NormalTok{ spr)}
+\KeywordTok{boxCox}\NormalTok{(lm.minimal)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{analyze-minimal-model}{%
+\subsection{Analyze minimal model}\label{analyze-minimal-model}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{Anova}\NormalTok{(lm.minimal)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Anova Table (Type II tests)
+## 
+## Response: Response
+##                   Sum Sq  Df   F value    Pr(>F)    
+## EnzymeConc        4189.9   1  569.0079 < 2.2e-16 ***
+## Enzyme            1422.4   4   48.2938 < 2.2e-16 ***
+## DetStock          9081.5   1 1233.3290 < 2.2e-16 ***
+## EnzymeConc:Enzyme  205.2   4    6.9663 3.704e-05 ***
+## Enzyme:DetStock     64.8   4    2.1997    0.0719 .  
+## Residuals         1067.7 145                        
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{anova}\NormalTok{(lm.complete, lm.minimal)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: Response ~ (EnzymeConc + Enzyme + DetStock + CaStock)^2
+## Model 2: Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock
+##   Res.Df    RSS Df Sum of Sq      F Pr(>F)
+## 1    137 1023.1                           
+## 2    145 1067.7 -8    -44.58 0.7462 0.6506
+\end{verbatim}
+
+\hypertarget{as}{%
+\subsection{as}\label{as}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(lm.minimal, }\DataTypeTok{col=}\NormalTok{spr}\OperatorTok{$}\NormalTok{Enzyme)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }\DataTypeTok{legend=}\KeywordTok{unique}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Enzyme), }\DataTypeTok{col=}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Enzyme), }\DataTypeTok{pch=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Response}\OperatorTok{~}\NormalTok{spr}\OperatorTok{$}\NormalTok{Enzyme)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-4-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{spr.new <-}\StringTok{ }\NormalTok{spr[}\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{26}\NormalTok{, }\DecValTok{-147}\NormalTok{, }\DecValTok{-160}\NormalTok{), ]}
+\NormalTok{lm.final <-}\StringTok{ }\KeywordTok{update}\NormalTok{(lm.minimal, }\DataTypeTok{data=}\NormalTok{spr.new)}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(lm.final, }\DataTypeTok{col=}\NormalTok{spr.new}\OperatorTok{$}\NormalTok{Enzyme)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }\DataTypeTok{legend=}\KeywordTok{unique}\NormalTok{(spr.new}\OperatorTok{$}\NormalTok{Enzyme), }\DataTypeTok{col=}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(spr.new}\OperatorTok{$}\NormalTok{Enzyme), }\DataTypeTok{pch=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-4-3.pdf} \# How
+does hardness and detergent influence the catalytic activity? Hardness
+(calcium) is not in our model - it does not influence the catalytic
+activity
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(lm.final)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock, data = spr.new)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.2279 -1.5836 -0.1801  1.5562  4.8551 
+## 
+## Coefficients:
+##                       Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)           23.38134    0.75618  30.920  < 2e-16 ***
+## EnzymeConc             1.16144    0.07391  15.715  < 2e-16 ***
+## EnzymeB               -5.31752    1.09860  -4.840 3.34e-06 ***
+## EnzymeC               -2.23093    1.06940  -2.086 0.038753 *  
+## EnzymeD               -5.70759    1.06940  -5.337 3.65e-07 ***
+## EnzymeE               -0.11263    1.12361  -0.100 0.920297    
+## DetStockDet0         -14.71380    0.84669 -17.378  < 2e-16 ***
+## EnzymeConc:EnzymeB    -0.18299    0.10559  -1.733 0.085273 .  
+## EnzymeConc:EnzymeC    -0.35709    0.10452  -3.417 0.000827 ***
+## EnzymeConc:EnzymeD    -0.58262    0.10452  -5.574 1.21e-07 ***
+## EnzymeConc:EnzymeE    -0.36441    0.10610  -3.435 0.000778 ***
+## EnzymeB:DetStockDet0   0.80262    1.20775   0.665 0.507411    
+## EnzymeC:DetStockDet0  -2.37748    1.19740  -1.986 0.049012 *  
+## EnzymeD:DetStockDet0   0.46537    1.19740   0.389 0.698117    
+## EnzymeE:DetStockDet0  -2.50165    1.21981  -2.051 0.042120 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.395 on 142 degrees of freedom
+## Multiple R-squared:  0.9489, Adjusted R-squared:  0.9438 
+## F-statistic: 188.2 on 14 and 142 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Show that there is no significant difference between the minimal model and a model considering the hardness (meaning that hardness does not influence activity)}
+\NormalTok{lm.withca <-}\StringTok{ }\KeywordTok{update}\NormalTok{(lm.final, }\OperatorTok{~}\StringTok{ }\NormalTok{. }\OperatorTok{+}\StringTok{ }\NormalTok{CaStock)}
+\KeywordTok{anova}\NormalTok{(lm.final, lm.withca)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: Response ~ EnzymeConc + Enzyme + DetStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock
+## Model 2: Response ~ EnzymeConc + Enzyme + DetStock + CaStock + EnzymeConc:Enzyme + 
+##     Enzyme:DetStock
+##   Res.Df    RSS Df Sum of Sq      F Pr(>F)
+## 1    142 814.39                           
+## 2    141 813.97  1   0.41217 0.0714 0.7897
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# With detergence:    intercept@23.43}
+\CommentTok{# without detergence: intercept@(23.43-14.81)=8.62}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{check-for-systematic-errors}{%
+\subsection{Check for systematic
+errors}\label{check-for-systematic-errors}}
+
+It seems that on a given day, experiments are only run with one specific
+enzyme. This could introduce errors to the data which may be hidden as
+an effect of the enzyme - but in reality it could be instrumental
+errors. By inspecting the subset of the data where the enzyme
+concentration is 0nM (that is, no enzyme is present) and where we keep
+the other variables constant, we can detect irregularities in the
+measured response. In an ideal experimental setting, the response would
+stay the same across all observations - but we detect the response
+differs on different run dates - meaning
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{((spr}\OperatorTok{$}\NormalTok{RunDate), }\KeywordTok{as.numeric}\NormalTok{(spr}\OperatorTok{$}\NormalTok{Enzyme), }\DataTypeTok{yaxt =} \StringTok{"n"}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Day"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Enzyme"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Enzymes used per day"}\NormalTok{)}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DataTypeTok{at=}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DataTypeTok{labels=}\NormalTok{LETTERS[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Remove the enzyme from data}
+\NormalTok{spr.new <-}\StringTok{ }\NormalTok{spr[, }\DecValTok{-4}\NormalTok{]}
+
+\CommentTok{# For similar data on different days, is there different response?}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{RunDate, spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{Response, }\DataTypeTok{xlab=}\StringTok{"Day"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"sqrt(Response)"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Det0 Ca0 EnzymeConc=0"}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{RunDate, spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{Response, }\DataTypeTok{xlab=}\StringTok{"Day"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"sqrt(Response)"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Det+ Ca0 EnzymeConc=0"}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{RunDate, spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{1}\NormalTok{, ]}\OperatorTok{$}\NormalTok{Response, }\DataTypeTok{xlab=}\StringTok{"Day"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"sqrt(Response)"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Det0 Ca+ EnzymeConc=0"}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ]}\OperatorTok{$}\NormalTok{RunDate, spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ]}\OperatorTok{$}\NormalTok{Response, }\DataTypeTok{xlab=}\StringTok{"Day"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"sqrt(Response)"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"Det+ Ca+ EnzymeConc=0"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-6-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{oneway.test}\NormalTok{(Response}\OperatorTok{~}\NormalTok{RunDate, }\DataTypeTok{data =}\NormalTok{ spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ], }\DataTypeTok{var.equal =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  One-way analysis of means (not assuming equal variances)
+## 
+## data:  Response and RunDate
+## F = 1095.1, num df = 4.0000, denom df = 2.4081, p-value = 0.0002617
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{oneway.test}\NormalTok{(Response}\OperatorTok{~}\NormalTok{RunDate, }\DataTypeTok{data =}\NormalTok{ spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ], }\DataTypeTok{var.equal =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  One-way analysis of means (not assuming equal variances)
+## 
+## data:  Response and RunDate
+## F = 117.01, num df = 4.0000, denom df = 2.3172, p-value = 0.004567
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{oneway.test}\NormalTok{(Response}\OperatorTok{~}\NormalTok{RunDate, }\DataTypeTok{data =}\NormalTok{ spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det0"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ], }\DataTypeTok{var.equal =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  One-way analysis of means (not assuming equal variances)
+## 
+## data:  Response and RunDate
+## F = 1396.5, num df = 4.0000, denom df = 2.1622, p-value = 0.0004257
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{oneway.test}\NormalTok{(Response}\OperatorTok{~}\NormalTok{RunDate, }\DataTypeTok{data =}\NormalTok{ spr.new[spr.new}\OperatorTok{$}\NormalTok{DetStock }\OperatorTok{==}\StringTok{ "Det+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{CaStock }\OperatorTok{==}\StringTok{ "Ca+"} \OperatorTok{&}\StringTok{ }\NormalTok{spr.new}\OperatorTok{$}\NormalTok{EnzymeConc }\OperatorTok{>=}\StringTok{ }\DecValTok{12}\NormalTok{, ], }\DataTypeTok{var.equal =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  One-way analysis of means (not assuming equal variances)
+## 
+## data:  Response and RunDate
+## F = NaN, num df = 4, denom df = NaN, p-value = NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{oneway.test}\NormalTok{(Response}\OperatorTok{~}\NormalTok{DetStock, }\DataTypeTok{data =}\NormalTok{ spr.new, }\DataTypeTok{var.equal =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  One-way analysis of means (not assuming equal variances)
+## 
+## data:  Response and DetStock
+## F = 206.46, num df = 1.00, denom df = 156.41, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(Response}\OperatorTok{^}\DecValTok{2}\OperatorTok{~}\NormalTok{DetStock, }\DataTypeTok{data =}\NormalTok{ spr.new, }\DataTypeTok{main=}\StringTok{"Detergence groups"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{case1_files/figure-latex/unnamed-chunk-6-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{confint}\NormalTok{(lm.minimal, }\StringTok{'EnzymeD'}\NormalTok{, }\DataTypeTok{level=}\FloatTok{0.95}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             2.5 %    97.5 %
+## EnzymeD -8.102532 -3.312638
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FloatTok{6.291-1.811}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.48
+\end{verbatim}
+
+\end{document}

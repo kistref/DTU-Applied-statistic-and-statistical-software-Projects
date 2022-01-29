@@ -1,0 +1,37 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## 02441 Applied Statistics and Statistical Software 
+# Exercise 4D - KFM
+
+
+```{r "setup", include=FALSE}
+## set working directory
+require("knitr")
+```
+The dataset kfm contains measurements of the newborn babies, their mother and milk consumption
+
+Variable name | Description
+------------- | -------------
+dl.milk | amount of breast milk (dl)
+sex | gender of body
+weight | baby weight (kg)
+ml.suppl | amount of milk supplement (ml)
+mat.weight | mothers weight (kg)
+mat.height | mothers height (cm)
+
+## 1. Make apropriate plots of the birthweight in order to check wether the weight is normally distributed
+
+```{r}
+# Code here
+```
+
+## 2. Make a $\chi^2$-test to test if the birthweights for the babies can be assumed normally distributed
+
+```{r}
+# Code here
+```
+
